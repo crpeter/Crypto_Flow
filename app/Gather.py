@@ -93,55 +93,39 @@ class Gather():
         return i + 1
     ## END FILE_LEN
 
-
-    def build_model(self, train_data):
-        model = keras.Sequential([
-            keras.layers.Dense(64, activation=tf.nn.relu, 
-                       input_shape=(3,20,)),
-            # keras.layers.Dense(64),
-            # keras.layers.Dense(64),
-            keras.layers.Dense(64, activation=tf.nn.relu),
-            keras.layers.Flatten(data_format=None),
-            keras.layers.Dense(1)
-        ])
-
-        ## regression algorithm ##
-        model.compile(loss='mse',
-                optimizer=tf.train.RMSPropOptimizer(0.001),
-                metrics=['mae'])
-
-        # ## binary crossentropy algorithm ##
-        # model.compile(optimizer=tf.train.AdamOptimizer(),
-        #       loss='binary_crossentropy',
-        #       metrics=['accuracy'])
-
-        ## binary crossentroy accuracy and binary_cross
-        # model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
-        #                loss='binary_crossentropy',
-        #                metrics=['accuracy', 'binary_crossentropy'])
-
-        return model
-
     def plot_history(self, history):
         plt.figure()
         plt.xlabel('Epoch')
         plt.ylabel('Loss / Error')
         for e in history.history.keys():
             plt.plot(history.epoch, history.history[e], label=e)
-        
-        # plt.plot(history.epoch, np.array(history.history['val_acc']), 
-        #         label='val_acc')
-        # plt.plot(history.epoch, np.array(history.history['val_binary_crossentropy']),
-        #         label = 'val bin acc')
-        # plt.plot(history.epoch, np.array(history.history['acc']), 
-        #         label='acc')
-        # plt.plot(history.epoch, np.array(history.history['loss']),
-        #         label = 'loss')
-        # plt.plot(history.epoch, np.array(history.history['binary_crossentropy']), 
-        #         label='bin cross')
         plt.legend()
-        plt.ylim([0,1])
+        plt.ylim([0,2])
         plt.show()
+
+
+    def build_model(self, train_data):
+        model = keras.Sequential([
+            keras.layers.Dense(32, activation=tf.nn.relu, 
+                       input_shape=(3,20,)),
+            keras.layers.Dense(32, activation=tf.nn.relu),
+            keras.layers.Flatten(data_format=None),
+            keras.layers.Dense(1)
+        ])
+        ## regression algorithm ##
+        model.compile(loss='mse',
+                optimizer=tf.train.RMSPropOptimizer(0.0001),
+                metrics=['mae'])
+        # binary crossentropy algorithm ##
+        # model.compile(optimizer=tf.train.AdamOptimizer(),
+        #       loss='binary_crossentropy',
+        #       metrics=['accuracy'])
+        ## binary crossentroy accuracy and binary_cross
+        # model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
+        #                loss='binary_crossentropy',
+        #                metrics=['accuracy', 'binary_crossentropy'])
+
+        return model
 
     
     def createNPFromFile(self, filename):
@@ -173,19 +157,24 @@ class Gather():
         print(train_data.shape)
         EPOCHS = 500
 
-        early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=30)
+        early_stop = keras.callbacks.EarlyStopping(monitor='loss', patience=30)
 
         train_labels = np.zeros(dataLength)
-        for e in train_labels:
-            e+=1
-            if e % 2 == 0:
-                e = 1
-            else:
-                e = 0
         self.createLabelsFromNumPy(train_data, train_labels)
-        history = model.fit(train_data, train_labels, epochs=EPOCHS,
-                    validation_split=0.2, verbose=0,
-                    callbacks=[early_stop, PrintDot()])
+        order = np.argsort(np.random.random(train_labels.shape))
+        train_data = train_data[order]
+        train_labels = train_labels[order]
+
+        ## Conver train_data np array to tensors
+        data_np = np.asarray(train_data, np.float32)
+        train_tensor = tf.convert_to_tensor(data_np, np.float32)
+        history = model.fit(train_tensor, train_labels, 
+                                epochs=EPOCHS,
+                                steps_per_epoch=1,
+                                # Only validation split on numpy array
+                                #validation_split=0.2, 
+                                verbose=0,
+                                callbacks=[early_stop, PrintDot()])
 
         history_dict = history.history
         print('history:', history_dict.keys())
@@ -203,16 +192,24 @@ class Gather():
         s = 0
         s+=1
 
-    def createLabelsFromNumPy(self, np, labels):
+    def createLabelsFromNumPy(self, npArr, labels):
         index = 0
+        maxIncrease = 0
         for e in labels:
             if index == 0:
-                e = 1
+                e = 1000
             else:
-                if np[index][0][5] > np[index-1][0][5]:
-                    e = 1
+                thisChange = npArr[index][0][5] - npArr[index-1][0][5]
+                if thisChange > 0:
+                    if thisChange > maxIncrease:
+                        maxIncrease = thisChange
+                        e = 1000
+                    else:
+                        e+=100
+                        e = float(e) / random.randint(1, 101)
                 else:
-                    e = 0
+                    e+=1
+                    e = float(e) / random.randint(1, 101)
 
 
     def get_pair_info(self, symbol, filename):
