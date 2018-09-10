@@ -4,6 +4,7 @@ import argparse
 sys.path.insert(0, './app')
 
 from Gather import Gather
+from Model import Model
 
 if __name__ == '__main__':
 
@@ -24,6 +25,6 @@ if __name__ == '__main__':
 
     option = parser.parse_args()
 
-    # Get start
     g = Gather(option)
+    # Get start
     #g.run()
