@@ -26,7 +26,7 @@ class Model():
 
     def __init__(self, option):
         print(option)
-        self.createNPFromFile(option.path)
+        self.learnFromNP(self.createNPFromFile(option.path))
 
 
     def file_len(self, fname):
@@ -36,6 +36,16 @@ class Model():
         return i + 1
     ## END FILE_LEN
 
+
+    def plot_history_one(self, history):
+        plt.figure()
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss / Error')
+        for e in history.history.keys():
+            plt.plot(history.epoch, history.history[e], label=e)
+        plt.legend()
+        plt.ylim([0,2])
+        plt.show()
 
     def plot_history(self, history, test_history):
         plt.figure()
@@ -48,6 +58,7 @@ class Model():
         plt.legend()
         plt.ylim([0,2])
         plt.show()
+
 
     def plot_shapes(self, history, test_history):
         print('history:', history.histor)
@@ -108,6 +119,10 @@ class Model():
                         main_index+=1
                     countMod+=1
                     countMod%=data_bundle_count
+        return train_data
+    ## END CREATE NP ARRAY FROM FILE
+
+    def learnFromNP(self, train_data):
         mean = train_data.mean(axis=0)
         std = train_data.std(axis=0)
         train_data = (train_data - mean) / std
@@ -119,7 +134,7 @@ class Model():
 
         early_stop = keras.callbacks.EarlyStopping(monitor='loss', patience=30)
 
-        train_labels = np.zeros(dataLength)
+        train_labels = np.zeros(train_data.shape[0])
         self.createLabelsFromNumPy(train_data, train_labels)
         order = np.argsort(np.random.random(train_labels.shape))
         train_data = train_data[order]
@@ -153,18 +168,22 @@ class Model():
                                 verbose=0,
                                 callbacks=[early_stop, PrintDot()])
 
-        test_history = model.fit(X_test, y_test, 
-                                epochs=EPOCHS,
-                                steps_per_epoch=1,
-                                # Only validation split on numpy array
-                                #validation_split=0.2, 
-                                verbose=0,
-                                callbacks=[early_stop, PrintDot()])
+        # test_history = model.fit(X_test, y_test, 
+        #                         epochs=EPOCHS,
+        #                         steps_per_epoch=1,
+        #                         # Only validation split on numpy array
+        #                         #validation_split=0.2, 
+        #                         verbose=0,
+        #                         callbacks=[early_stop, PrintDot()])
+
+        test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
+        print(test_history)
 
         history_dict = history.history
         print('history:', history_dict.keys())
-        self.plot_history(history, test_history)
+        self.plot_history_one(history)
         #self.plot_history(history, test_history)
+
 
 
         #[loss, mae] = model.evaluate(test_data, test_labels, verbose=0)
