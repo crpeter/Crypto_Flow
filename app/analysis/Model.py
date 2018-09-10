@@ -44,7 +44,7 @@ class Model():
         for e in history.history.keys():
             plt.plot(history.epoch, history.history[e], label=e)
         for e in test_history.history.keys():
-            plt.plot(test_history.epoch, history.history[e], label=e)
+            plt.plot(test_history.epoch, test_history.history[e], label=e)
         plt.legend()
         plt.ylim([0,2])
         plt.show()
@@ -66,9 +66,9 @@ class Model():
 
     def build_model(self, train_data):
         model = keras.Sequential([
-            keras.layers.Dense(32, activation=tf.nn.relu, 
+            keras.layers.Dense(64, activation=tf.nn.relu, 
                        input_shape=(3,20,)),
-            keras.layers.Dense(32, activation=tf.nn.relu),
+            keras.layers.Dense(64, activation=tf.nn.relu),
             keras.layers.Flatten(data_format=None),
             keras.layers.Dense(1)
         ])
@@ -130,17 +130,17 @@ class Model():
         train_tensor = tf.convert_to_tensor(data_np)
 
         ## Split tensors in half
-        # X_train, X_test = tf.split(
-        #                         train_tensor,
-        #                         2,
-        #                         axis=0,
-        #                         num=None,
-        #                         name='split')
+        X_train, X_test = tf.split(
+                                train_tensor,
+                                2,
+                                axis=0,
+                                num=None,
+                                name='split')
         
         ## Split numPy in half
-        X_train, X_test = train_test_split(train_labels,
-                                            test_size=0.5,
-                                            random_state=42)
+        # X_train, X_test = train_test_split(train_data,
+        #                                     test_size=0.5,
+        #                                     random_state=42)
         y_train, y_test = train_test_split(train_labels,
                                             test_size=0.5,
                                             random_state=42)
@@ -159,7 +159,7 @@ class Model():
                                 # Only validation split on numpy array
                                 #validation_split=0.2, 
                                 verbose=0,
-                                callbacks=[PrintDot()])
+                                callbacks=[early_stop, PrintDot()])
 
         history_dict = history.history
         print('history:', history_dict.keys())
