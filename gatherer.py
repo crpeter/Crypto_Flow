@@ -4,7 +4,6 @@ import argparse
 sys.path.insert(0, './app')
 
 from Gather import Gather
-from Model import Model
 
 if __name__ == '__main__':
 

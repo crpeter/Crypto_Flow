@@ -14,13 +14,13 @@ import logging.handlers
 import re
 import random
 
-# Define ML imports
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-from tensorflow import keras
-from keras.utils.data_utils import get_file
-from sklearn.cross_validation import train_test_split
+# # Define ML imports
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import tensorflow as tf
+# from tensorflow import keras
+# from keras.utils.data_utils import get_file
+# from sklearn.cross_validation import train_test_split
 
 # Define Custom imports
 from Database import Database
@@ -101,7 +101,7 @@ class Gather():
                             if key != 'symbol':
                                 f.write(str(data[key]) + ' ')
                         f.write('\n')
-                    f.write('\n')
+                    #f.write('\n')
                 except:
                     f = open(filename, 'a')
                     for e in symbols:
@@ -111,6 +111,6 @@ class Gather():
                             if key != 'symbol':
                                 f.write(str(data[key]) + ' ')
                         f.write('\n')
-                    f.write('\n')
+                    #f.write('\n')
         except:
             f.close()

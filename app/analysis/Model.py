@@ -36,43 +36,18 @@ class Model():
         return i + 1
     ## END FILE_LEN
 
-
-    def plot_history_one(self, history):
+    def plot_history(self, history, test_history = None):
         plt.figure()
         plt.xlabel('Epoch')
         plt.ylabel('Loss / Error')
         for e in history.history.keys():
             plt.plot(history.epoch, history.history[e], label=e)
+        if test_history is not None:
+            for e in test_history.history.keys():
+                plt.plot(test_history.epoch, test_history.history[e], label=e)
         plt.legend()
         plt.ylim([0,2])
         plt.show()
-
-    def plot_history(self, history, test_history):
-        plt.figure()
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss / Error')
-        for e in history.history.keys():
-            plt.plot(history.epoch, history.history[e], label=e)
-        for e in test_history.history.keys():
-            plt.plot(test_history.epoch, test_history.history[e], label=e)
-        plt.legend()
-        plt.ylim([0,2])
-        plt.show()
-
-
-    def plot_shapes(self, history, test_history):
-        print('history:', history.histor)
-
-        # plt.clf()   # clear figure
-        # plt.figure()
-
-        # plt.plot(history.epoch, acc_train, 'bo', label='Training acc')
-        # plt.plot(history.epoch, loss_train, 'bo', label='Training loss')
-        # plt.plot(history.epoch, val_loss_train, 'b', label='Validation loss')
-        # plt.title('Training and validation accuracy')
-        # plt.xlabel('Epochs')
-        # plt.ylabel('Accuracy')
-        # plt.legend()
 
 
     def build_model(self, train_data):
@@ -181,7 +156,7 @@ class Model():
 
         history_dict = history.history
         print('history:', history_dict.keys())
-        self.plot_history_one(history)
+        self.plot_history(history)
         #self.plot_history(history, test_history)
 
 
