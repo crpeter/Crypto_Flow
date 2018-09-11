@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     ## PATH TO FILE FROM BASE ##
     parser.add_argument('--path', type=str, help='Path From Base Directory To File To Be Formatted', required=True)
-
+    parser.add_argument('--bundle_length', type=int, help='Number Of Ticker Data Sets In Each Bundle', required=True)
 
     # DEBUG OPTION
     parser.add_argument('--debug', help='Debug True/False if set --debug flag, will output all messages every "--wait_time" ',

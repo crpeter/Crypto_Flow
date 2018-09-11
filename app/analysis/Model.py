@@ -26,7 +26,7 @@ class Model():
 
     def __init__(self, option):
         print(option)
-        self.learnFromNP(self.createNPFromFile(option.path))
+        self.learnFromNP(self.createNPFromFile(option.path, option.bundle_length))
 
 
     def file_len(self, fname):
@@ -46,36 +46,37 @@ class Model():
             for e in test_history.history.keys():
                 plt.plot(test_history.epoch, test_history.history[e], label=e)
         plt.legend()
-        plt.ylim([0,2])
+        plt.ylim([0,1])
         plt.show()
 
 
     def build_model(self, train_data):
+        print('shape: ', train_data.shape)
         model = keras.Sequential([
             keras.layers.Dense(64, activation=tf.nn.relu, 
-                       input_shape=(3,20,)),
+                       input_shape=(train_data.shape[1],train_data.shape[2],)),
             keras.layers.Dense(64, activation=tf.nn.relu),
             keras.layers.Flatten(data_format=None),
             keras.layers.Dense(1)
         ])
         ## regression algorithm ##
-        # model.compile(loss='mse',
-        #         optimizer=tf.train.RMSPropOptimizer(0.001),
-        #         metrics=['mae'])
-        # binary crossentropy algorithm ##
+        model.compile(loss='mse',
+                optimizer=tf.train.RMSPropOptimizer(0.001),
+                metrics=['mae'])
+        ### binary crossentropy algorithm ##
         # model.compile(optimizer=tf.train.AdamOptimizer(),
         #       loss='binary_crossentropy',
         #       metrics=['accuracy'])
-        # binary crossentroy accuracy and binary_cross
-        model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
-                       loss='binary_crossentropy',
-                       metrics=['accuracy', 'binary_crossentropy'])
+        # ## binary crossentroy accuracy and binary_cross
+        # model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
+        #                loss='binary_crossentropy',
+        #                metrics=['accuracy', 'binary_crossentropy'])
 
         return model
 
     
-    def createNPFromFile(self, filename):
-        data_bundle_count = 3
+    def createNPFromFile(self, filename, tuple_length):
+        data_bundle_count = tuple_length
         dataLength = 10134
         train_data = np.zeros((dataLength, data_bundle_count, 20))
         # try:
@@ -90,7 +91,7 @@ class Model():
                     for e in currentData:
                         train_data[main_index][countMod][currentDataIndex] = e
                         currentDataIndex+=1
-                    if countMod == 2:
+                    if countMod == data_bundle_count-1:
                         main_index+=1
                     countMod+=1
                     countMod%=data_bundle_count
@@ -120,22 +121,22 @@ class Model():
         train_tensor = tf.convert_to_tensor(data_np)
 
         ## Split tensors in half
-        X_train, X_test = tf.split(
+        train_data, test_data = tf.split(
                                 train_tensor,
                                 2,
                                 axis=0,
                                 num=None,
                                 name='split')
         
-        ## Split numPy in half
-        # X_train, X_test = train_test_split(train_data,
+        # ## Split numPy in half
+        # train_data, test_data = train_test_split(train_data,
         #                                     test_size=0.5,
         #                                     random_state=42)
-        y_train, y_test = train_test_split(train_labels,
+        train_labels, test_labels = train_test_split(train_labels,
                                             test_size=0.5,
                                             random_state=42)
 
-        history = model.fit(X_train, y_train, 
+        history = model.fit(train_data, train_labels, 
                                 epochs=EPOCHS,
                                 steps_per_epoch=1,
                                 # Only validation split on numpy array
@@ -143,20 +144,20 @@ class Model():
                                 verbose=0,
                                 callbacks=[early_stop, PrintDot()])
 
-        # test_history = model.fit(X_test, y_test, 
-        #                         epochs=EPOCHS,
-        #                         steps_per_epoch=1,
-        #                         # Only validation split on numpy array
-        #                         #validation_split=0.2, 
-        #                         verbose=0,
-        #                         callbacks=[early_stop, PrintDot()])
+        test_history = model.fit(test_data, test_labels, 
+                                epochs=EPOCHS,
+                                steps_per_epoch=1,
+                                # Only validation split on numpy array
+                                #validation_split=0.2, 
+                                verbose=0,
+                                callbacks=[early_stop, PrintDot()])
 
-        test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
-        print(test_history)
+        # test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
+        # print(test_history
 
         history_dict = history.history
         print('history:', history_dict.keys())
-        self.plot_history(history)
+        self.plot_history(history, test_history)
         #self.plot_history(history, test_history)
 
 
@@ -174,23 +175,22 @@ class Model():
         s+=1
 
     def createLabelsFromNumPy(self, npArr, labels):
-        index = 0
-        maxIncrease = 0
+        main_index = 0
         for e in labels:
-            if index == 0:
-                e = 1000
+            current_price_change = npArr[main_index][0][0]
+            next_price_change = npArr[main_index+1][0][0]
+            num_consecutive_increases = 0
+            index = 0
+            while current_price_change < next_price_change:
+                current_price_change = npArr[main_index+index][0][0]
+                next_price_change = npArr[main_index+1+index][0][0]
+                index+=1
+                num_consecutive_increases+=1
+            if num_consecutive_increases > 15:
+                e = 1
             else:
-                thisChange = npArr[index][0][5] - npArr[index-1][0][5]
-                if thisChange > 0:
-                    if thisChange > maxIncrease:
-                        maxIncrease = thisChange
-                        e = 1000
-                    else:
-                        e+=100
-                        e = float(e) / random.randint(1, 101)
-                else:
-                    e+=1
-                    e = float(e) / random.randint(1, 101)
+                e = 0
+
 
 
 class PrintDot(keras.callbacks.Callback):
