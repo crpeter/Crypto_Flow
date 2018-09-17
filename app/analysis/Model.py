@@ -26,7 +26,9 @@ class Model():
 
     def __init__(self, option):
         print(option)
-        self.learnFromNP(self.createNPFromFile(option.path, option.bundle_length))
+        #self.learnFromNP(self.createNPFromFile(option.path, option.bundle_length))
+        data = self.createNPFromFile(option.path, option.bundle_length)
+        self.plot_data(data, [0,1])
 
 
     def file_len(self, fname):
@@ -49,6 +51,38 @@ class Model():
         plt.ylim([0,1])
         plt.show()
 
+    def plot_data(self, data, plot_values):
+        plt.figure()
+        plt.xlabel('Time')
+        plt.ylabel('i=1 value')
+        min_val = data[0][0][plot_values[0]]
+        max_val = data[0][0][plot_values[0]]
+        for value in plot_values:
+            values = np.zeros(len(data))
+            ## Create indices
+            indices = np.zeros(len(values))
+            index = 0
+            while index < len(indices):
+                indices[index] = index
+                index+= 1
+            ##
+            avg = 0
+            index = 0
+            for e in data:
+                values[index] = e[0][value]
+                if e[0][value] > max_val:
+                    max_val = e[0][value]
+                elif e[0][value] < min_val:
+                    min_val = e[0][value]
+                index+= 1
+            label_string = "data at index: " + str(value)
+            plt.plot(indices, values, label=label_string)
+        ## END for value in plot_values        
+        plt.legend()
+        plt.xlim(1000, 1500)
+        plt.ylim([min_val - 0.0001, max_val + 0.0001])
+        plt.show()
+
 
     def build_model(self, train_data):
         print('shape: ', train_data.shape)
@@ -57,17 +91,18 @@ class Model():
                        input_shape=(train_data.shape[1],train_data.shape[2],)),
             keras.layers.Dense(64, activation=tf.nn.relu),
             keras.layers.Flatten(data_format=None),
-            keras.layers.Dense(1)
+            keras.layers.Dense(1,)
         ])
         ## regression algorithm ##
         model.compile(loss='mse',
-                optimizer=tf.train.RMSPropOptimizer(0.001),
+                #optimizer=tf.train.RMSPropOptimizer(0.001),
+                optimizer=keras.optimizers.Adam(lr=0.001, beta_1=0.9, decay=0.0),
                 metrics=['mae'])
         ### binary crossentropy algorithm ##
         # model.compile(optimizer=tf.train.AdamOptimizer(),
         #       loss='binary_crossentropy',
         #       metrics=['accuracy'])
-        # ## binary crossentroy accuracy and binary_cross
+        ### binary crossentroy accuracy and binary_cross
         # model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
         #                loss='binary_crossentropy',
         #                metrics=['accuracy', 'binary_crossentropy'])
@@ -77,7 +112,7 @@ class Model():
     
     def createNPFromFile(self, filename, tuple_length):
         data_bundle_count = tuple_length
-        dataLength = 10134
+        dataLength = 2777
         train_data = np.zeros((dataLength, data_bundle_count, 20))
         # try:
         with open(filename, 'r') as f:
@@ -140,7 +175,7 @@ class Model():
                                 epochs=EPOCHS,
                                 steps_per_epoch=1,
                                 # Only validation split on numpy array
-                                #validation_split=0.2, 
+                                #validation_split=0.2,
                                 verbose=0,
                                 callbacks=[early_stop, PrintDot()])
 
@@ -153,21 +188,10 @@ class Model():
                                 callbacks=[early_stop, PrintDot()])
 
         # test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
-        # print(test_history
-
         history_dict = history.history
         print('history:', history_dict.keys())
         self.plot_history(history, test_history)
-        #self.plot_history(history, test_history)
-
-
-
-        #[loss, mae] = model.evaluate(test_data, test_labels, verbose=0)
-
-        #print("Testing set Mean Abs Error: ${:7.2f}".format(mae * 1000))
-        #print(std)
-        # for (e, i, o) in train_data:
-        #     print('e:', e, '\ni:', i, '\no:', o, '\n')
+    ## END LEARN FROM NP
 
     
     def putThroughTheOleNumberCruncher(self, npArr):

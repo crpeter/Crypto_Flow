@@ -90,27 +90,27 @@ class Gather():
 
     def get_pair_info(self, symbol, filename):
         symbols = ['ETHBTC']#['ETHBTC', 'HOTETH', 'NANOETH']
-        try:
-            while 1==1:
-                try:
-                    f = open(filename, 'x')
-                    for e in symbols:
-                        data = client.get_ticker(e)
-                        for key in data:
-                            print("key: ", key, ":", data[key])
-                            if key != 'symbol':
-                                f.write(str(data[key]) + ' ')
-                        f.write('\n')
-                    #f.write('\n')
-                except:
-                    f = open(filename, 'a')
-                    for e in symbols:
-                        data = client.get_ticker(e)
-                        for key in data:
-                            print("key: ", key, ":", data[key])
-                            if key != 'symbol':
-                                f.write(str(data[key]) + ' ')
-                        f.write('\n')
-                    #f.write('\n')
-        except:
-            f.close()
+        # try:
+        while 1==1:
+        # try:
+            # f = open(filename, 'x')
+            # for e in symbols:
+            #     data = client.get_ticker(e)
+            #     for key in data:
+            #         print("key: ", key, ":", data[key])
+            #         if key != 'symbol':
+            #             f.write(str(data[key]) + ' ')
+            #     f.write('\n')
+            #f.write('\n')
+        # except:
+            f = open(filename, 'a')
+            for e in symbols:
+                data = client.get_ticker(e)
+                for key in data:
+                    print("key: ", key, ":", data[key])
+                    if key != 'symbol':
+                        f.write(str(data[key]) + ' ')
+                f.write('\n')
+            #f.write('\n')
+        # except:
+        f.close()
