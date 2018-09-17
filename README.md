@@ -1,43 +1,12 @@
-# Binance Trader (RC 2)
+## Tensor Crypto Thing
 
-This is an experimental bot for auto trading the binance.com exchange. [@yasinkuyu](https://twitter.com/yasinkuyu)
+## Current Usage
 
-![Screenshot](https://github.com/yasinkuyu/binance-trader/blob/master/img/screenshot.png)
+    python3 analysis.py --path <path_to_file> --bundle_length <# data points in file>
 
-## Configuration
+    python3 gatherer.py --path <file_name>
 
-1. [Signup](https://www.binance.com/?ref=10701111) for Binance
-1. Enable Two-factor Authentication
-1. Go API Center, [Create New](https://www.binance.com/userCenter/createApi.html) Api Key
-
-        [✓] Read Info [✓] Enable Trading [X] Enable Withdrawals
-
-1. Rename **config.sample.py** to `config.py` / **orders.sample.db** to `orders.db`
-1. Get an API and Secret Key, insert into `config.py`
-
-        API key for account access
-        api_key = ''
-        Secret key for account access
-        api_secret = ''
-
-        [API Docs](https://www.binance.com/restapipub.html) 
-        
-1. Optional: run as an excutable application in Docker containers
-
-## Requirements
-
-    sudo pip install requests
-    
-    Python 2.7
-        import os
-        import sys
-        import time
-        import config
-        import argparse
-        import threading
-        import sqlite3
-
-## Usage
+## Trading Usage
 
     python trader.py --symbol XVGBTC
     
@@ -89,63 +58,8 @@ This is an experimental bot for auto trading the binance.com exchange. [@yasinku
         trader.py --symbol ETHUSDT --quantity 0.3 --profit 1.5
         ...
     
-## Run in a Docker container
+## Run in a Docker container (not ready)
 
     docker build -t trader .
 
     docker run trader
- 
-## DISCLAIMER
-
-    I am not responsible for anything done with this bot. 
-    You use it at your own risk. 
-    There are no warranties or guarantees expressed or implied. 
-    You assume all responsibility and liability.
-     
-## Contributing
-
-    Fork this Repo
-    Commit your changes (git commit -m 'Add some feature')
-    Push to the changes (git push)
-    Create a new Pull Request
-    
-    Thanks all for your contributions...
-    
-    Contributors
-        @WeSpeakCrypto
-        @afoke
-        @omerfarukz
-        @plgonzalezrx8
-    
-## Troubleshooting
-
-    Filter failure: MIN_NOTIONAL
-    https://support.binance.com/hc/en-us/articles/115000594711-Trading-Rule
-
-    Filter failure: PRICE_FILTER
-    https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
-    
-    Timestamp for this request was 1000ms ahead of the server's time.
-    https://github.com/yasinkuyu/binance-trader/issues/63#issuecomment-355857901
-    
-## Roadmap
-
-    - MACD indicator (buy/sell)
-    - Stop-Loss implementation
-    - Working modes
-      - profit: Find defined profit, buy and sell. (Ex: 1.3% profit)
-      - range:  Between target two price, buy and sell. (Ex: <= 0.00100 buy - >= 0.00150 sell )
-    - Binance/Bittrex/HitBTC Arbitrage  
-    
-    ...
-    
-    - October 7, 2017 Beta
-    - January 6, 2018 RC
-    - January 15, 2018 RC 1
-    - January 20, 2018 RC 2
-     
-## License
-
-Code released under the [MIT License](https://opensource.org/licenses/MIT).
-
----
