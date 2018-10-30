@@ -29,6 +29,7 @@ class Model():
     def __init__(self, option):
         print(option)
         data = self.createNPFromFile(option.path, option.bundle_length)
+        print(data)
         #self.plot_data(data, [0,1])
         self.learnFromNP(data)
 
@@ -123,8 +124,9 @@ class Model():
     
     def createNPFromFile(self, filename, tuple_length):
         data_bundle_count = tuple_length
-        dataLength = 2000
-        train_data = np.zeros((dataLength, data_bundle_count, 20))
+        dataLength = 2550
+        train_data = np.zeros((dataLength, 3, 100))
+        #print(train_data)
         # try:
         with open(filename, 'r') as f:
             countMod = 0
@@ -158,50 +160,50 @@ class Model():
 
         train_labels = np.zeros(train_data.shape[0])
         self.createLabelsFromNumPy(train_data, train_labels)
-        # order = np.argsort(np.random.random(train_labels.shape))
-        # train_data = train_data[order]
-        # train_labels = train_labels[order]
+        order = np.argsort(np.random.random(train_labels.shape))
+        train_data = train_data[order]
+        train_labels = train_labels[order]
 
-        # ## Conver train_data np array to tensors
-        # data_np = np.asarray(train_data, np.float32)
-        # train_tensor = tf.convert_to_tensor(data_np)
+        ## Conver train_data np array to tensors
+        data_np = np.asarray(train_data, np.float32)
+        train_tensor = tf.convert_to_tensor(data_np)
 
-        # ## Split tensors in half
-        # train_data, test_data = tf.split(
-        #                         train_tensor,
-        #                         2,
-        #                         axis=0,
-        #                         num=None,
-        #                         name='split')
+        ## Split tensors in half
+        train_data, test_data = tf.split(
+                                train_tensor,
+                                2,
+                                axis=0,
+                                num=None,
+                                name='split')
         
-        # # ## Split numPy in half
-        # # train_data, test_data = train_test_split(train_data,
-        # #                                     test_size=0.5,
-        # #                                     random_state=42)
-        # train_labels, test_labels = train_test_split(train_labels,
+        # ## Split numPy in half
+        # train_data, test_data = train_test_split(train_data,
         #                                     test_size=0.5,
         #                                     random_state=42)
+        train_labels, test_labels = train_test_split(train_labels,
+                                            test_size=0.5,
+                                            random_state=42)
 
-        # history = model.fit(train_data, train_labels, 
-        #                         epochs=EPOCHS,
-        #                         steps_per_epoch=1,
-        #                         # Only validation split on numpy array
-        #                         #validation_split=0.2,
-        #                         verbose=0,
-        #                         callbacks=[early_stop, PrintDot()])
+        history = model.fit(train_data, train_labels, 
+                                epochs=EPOCHS,
+                                steps_per_epoch=1,
+                                # Only validation split on numpy array
+                                #validation_split=0.2,
+                                verbose=0,
+                                callbacks=[early_stop, PrintDot()])
 
-        # test_history = model.fit(test_data, test_labels, 
-        #                         epochs=EPOCHS,
-        #                         steps_per_epoch=1,
-        #                         # Only validation split on numpy array
-        #                         #validation_split=0.2, 
-        #                         verbose=0,
-        #                         callbacks=[early_stop, PrintDot()])
+        test_history = model.fit(test_data, test_labels, 
+                                epochs=EPOCHS,
+                                steps_per_epoch=1,
+                                # Only validation split on numpy array
+                                #validation_split=0.2, 
+                                verbose=0,
+                                callbacks=[early_stop, PrintDot()])
 
-        # # test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
-        # history_dict = history.history
-        # print('history:', history_dict.keys())
-        # self.plot_history(history, test_history)
+        # test_history = model.evaluate(X_test, y_test, steps=1, verbose=1)
+        history_dict = history.history
+        print('history:', history_dict.keys())
+        self.plot_history(history, test_history)
     ## END LEARN FROM NP
 
     

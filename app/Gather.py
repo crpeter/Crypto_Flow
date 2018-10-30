@@ -104,17 +104,18 @@ class Gather():
                     order_book = client.get_order_books(e)
                     print("order book")
                     for e in order_book['bids']:
-                        print('bid:', e[0], 'quantity:', e[1])
-                        f.write(e[0] + ' ' + e[1] + ' ')
+                        print('bid:', str(e[0]), 'quantity:', str(e[1]))
+                        f.write(str(e[0]) + ' ' + str(e[1]) + ' ')
                     f.write('\n')
                     for e in order_book['asks']:
-                        print('ask:', e[0], 'quantity:', e[1])
-                        f.write(e[0] + ' ' + e[1] + ' ')
+                        print('ask:', str(e[0]), 'quantity:', str(e[1]))
+                        f.write(str(e[0]) + ' ' + str(e[1]) + ' ')
                     #return
                     f.write('\n')
                 f.write('\n')
             except:
                 f = open(filename, 'a')
+                f.write('\n')
                 for e in symbols:
                     data = client.get_ticker(e)
                     for key in data:
@@ -125,12 +126,12 @@ class Gather():
                     order_book = client.get_order_books(e)
                     print("order book")
                     for e in order_book['bids']:
-                        print('bid:', e[0], 'quantity:', e[1])
-                        f.write(e[0] + ' ' + e[1] + ' ')
+                        print('bid:', str(e[0]), 'quantity:', str(e[1]))
+                        f.write(str(e[0]) + ' ' + str(e[1]) + ' ')
                     f.write('\n')
                     for e in order_book['asks']:
-                        print('ask:', e[0], 'quantity:', e[1])
-                        f.write(e[0] + ' ' + e[1] + ' ')
+                        print('ask:', str(e[0]), 'quantity:', str(e[1]))
+                        f.write(str(e[0]) + ' ' + str(e[1]) + ' ')
                     f.write('\n')    
                     #return
                 f.write('\n')
