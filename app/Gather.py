@@ -92,25 +92,46 @@ class Gather():
         symbols = ['ETHBTC']#['ETHBTC', 'HOTETH', 'NANOETH']
         # try:
         while 1==1:
-        # try:
-            # f = open(filename, 'x')
-            # for e in symbols:
-            #     data = client.get_ticker(e)
-            #     for key in data:
-            #         print("key: ", key, ":", data[key])
-            #         if key != 'symbol':
-            #             f.write(str(data[key]) + ' ')
-            #     f.write('\n')
-            #f.write('\n')
-        # except:
-            f = open(filename, 'a')
-            for e in symbols:
-                data = client.get_ticker(e)
-                for key in data:
-                    print("key: ", key, ":", data[key])
-                    if key != 'symbol':
-                        f.write(str(data[key]) + ' ')
+            try:
+                f = open(filename, 'x')
+                for e in symbols:
+                    data = client.get_ticker(e)
+                    for key in data:
+                        print("key: ", key, ":", data[key])
+                        if key != 'symbol':
+                            f.write(str(data[key]) + ' ')
+                    f.write('\n')
+                    order_book = client.get_order_books(e)
+                    print("order book")
+                    for e in order_book['bids']:
+                        print('bid:', e[0], 'quantity:', e[1])
+                        f.write(e[0] + ' ' + e[1] + ' ')
+                    f.write('\n')
+                    for e in order_book['asks']:
+                        print('ask:', e[0], 'quantity:', e[1])
+                        f.write(e[0] + ' ' + e[1] + ' ')
+                    #return
+                    f.write('\n')
                 f.write('\n')
-            #f.write('\n')
-        # except:
+            except:
+                f = open(filename, 'a')
+                for e in symbols:
+                    data = client.get_ticker(e)
+                    for key in data:
+                        print("key: ", key, ":", data[key])
+                        if key != 'symbol':
+                            f.write(str(data[key]) + ' ')
+                    f.write('\n')
+                    order_book = client.get_order_books(e)
+                    print("order book")
+                    for e in order_book['bids']:
+                        print('bid:', e[0], 'quantity:', e[1])
+                        f.write(e[0] + ' ' + e[1] + ' ')
+                    f.write('\n')
+                    for e in order_book['asks']:
+                        print('ask:', e[0], 'quantity:', e[1])
+                        f.write(e[0] + ' ' + e[1] + ' ')
+                    f.write('\n')    
+                    #return
+                f.write('\n')
         f.close()
