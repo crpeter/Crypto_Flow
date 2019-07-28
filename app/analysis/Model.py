@@ -229,7 +229,7 @@ class Model():
         for e in local_max:
             print(e)
             for p in e:
-                print('p', p)
+                print('max:', p)
             #for p in e:
 #            labels[index] = 2
             index+=1
